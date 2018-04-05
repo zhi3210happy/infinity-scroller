@@ -9,6 +9,7 @@ export default {
   },
   methods: {
     getQuotesAPI() {
+       this.currentPage++;
       return fetch(
         `https://node-hnapi.herokuapp.com/news?page=${this.currentPage}`
       );
@@ -21,7 +22,6 @@ export default {
     },
     processData(res){
       res.json().then(news => {
-       this.currentPage++;
        this.list=this.list.concat(news)
      });
     }
