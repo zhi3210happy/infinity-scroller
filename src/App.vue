@@ -1,6 +1,35 @@
+<template>
+        <div id="app">
+        <ul id="infinite-scroller" v-stream:scroll="plus$">
+          <li v-for="(item,i) in list" :key="i">
+            {{`${item.id}-${item.title}`}}
+          </li>
+        </ul>
+      </div>
+</template>
+
 <script>
-import { Observable } from "rxjs";
+import Rx from 'rxjs'
 export default {
+  domStreams: ['plus$'],
+  subscriptions() {
+    return{
+      requestOnScroll$:this.plus$.map(({event}) =>(
+        {
+        sH: event.target.scrollHeight,
+        sT: event.target.scrollTop,
+        cH: event.target.clientHeight
+      }))
+      .pairwise()
+      .filter(positions => {
+        return (
+          this.isUserScrollingDown(positions) &&
+          this.isScrollExpectedPercent(positions[1], 90)
+        )
+      }).startWith([])
+      .exhaustMap(() => Rx.Observable.fromPromise(this.getQuotesAPI()))
+    }
+  },
   data() {
     return {
       list: [],
@@ -9,7 +38,7 @@ export default {
   },
   methods: {
     getQuotesAPI() {
-       this.currentPage++;
+      this.currentPage++;
       return fetch(
         `https://node-hnapi.herokuapp.com/news?page=${this.currentPage}`
       );
@@ -20,47 +49,27 @@ export default {
     isScrollExpectedPercent(position, percent) {
       return (position.sT + position.cH) / position.sH > percent / 100;
     },
-    processData(res){
+    processData(res) {
       res.json().then(news => {
-       this.list=this.list.concat(news)
-     });
+        this.list = this.list.concat(news);
+      });
     }
   },
   mounted() {
-    const scrollElem = document.getElementById("infinite-scroller");
-    const scrollEvent$ = Observable.fromEvent(scrollElem, "scroll");
-    const userScrolledDown$ = scrollEvent$
-      .map(e => ({
-        sH: e.target.scrollHeight,
-        sT: e.target.scrollTop,
-        cH: e.target.clientHeight
-      }))
-      .pairwise()
-      .filter(positions => {
-        return (
-          this.isUserScrollingDown(positions) &&
-          this.isScrollExpectedPercent(positions[1], 70)
-        );
-      });
-    const requestOnScroll$ = userScrolledDown$
-      .startWith([])
-      .exhaustMap(() => Observable.fromPromise(this.getQuotesAPI()));
-    requestOnScroll$.subscribe(this.processData);
+   this.$observables.requestOnScroll$.subscribe(this.processData)
   },
-  beforeDestroy(){
-    
-  },
-  render() {
-    return (
-      <div id="app">
-        <ul id="infinite-scroller">
-          {this.list.map(news => {
-            return <li>{`${news.id} - ${news.title}`}</li>;
-          })}
-        </ul>
-      </div>
-    );
-  }
+  beforeDestroy() {},
+  // render(){
+  //   return(
+  //     <div id="app">
+  //       <ul id="infinite-scroller">
+  //         {this.list.map(news => {
+  //           return <li>{`${news.id} - ${news.title}`}</li>;
+  //         })}
+  //       </ul>
+  //     </div>
+  //   )
+  // }
 };
 </script>
 <style lang="scss">

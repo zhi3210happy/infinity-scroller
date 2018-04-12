@@ -6398,6 +6398,10 @@ vue-router@^3.0.1:
   version "3.0.1"
   resolved "http://registry.npm.taobao.org/vue-router/download/vue-router-3.0.1.tgz#d9b05ad9c7420ba0f626d6500d693e60092cc1e9"
 
+vue-rx@^5.0.0:
+  version "5.0.0"
+  resolved "http://registry.npm.taobao.org/vue-rx/download/vue-rx-5.0.0.tgz#71ed02e68c5e04db9d3cb765f4454b619a75c32d"
+
 vue-style-loader@^4.0.1:
   version "4.1.0"
   resolved "http://registry.npm.taobao.org/vue-style-loader/download/vue-style-loader-4.1.0.tgz#7588bd778e2c9f8d87bfc3c5a4a039638da7a863"
