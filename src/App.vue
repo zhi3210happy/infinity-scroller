@@ -14,17 +14,18 @@ export default {
   domStreams: ['plus$'],
   subscriptions() {
     return{
-      requestOnScroll$:this.plus$.map(({event}) =>(
+      requestOnScroll$:this.plus$.pluck('event','target').
+      map((target) =>(
         {
-        sH: event.target.scrollHeight,
-        sT: event.target.scrollTop,
-        cH: event.target.clientHeight
+        sH:target.scrollHeight,
+        sT:target.scrollTop,
+        cH:target.clientHeight
       }))
       .pairwise()
       .filter(positions => {
         return (
           this.isUserScrollingDown(positions) &&
-          this.isScrollExpectedPercent(positions[1], 90)
+          this.isScrollExpectedPercent(positions[1], 80)
         )
       }).startWith([])
       .exhaustMap(() => Rx.Observable.fromPromise(this.getQuotesAPI()))
