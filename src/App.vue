@@ -1,16 +1,43 @@
 <template>
         <div id="app">
-        <ul id="infinite-scroller" v-stream:scroll="plus$">
+        <ul id="infinite-scroll" v-stream:scroll="plus$">
           <li v-for="(item,i) in list" :key="i">
             {{`${item.id}-${item.title}`}}
           </li>
         </ul>
+        <child></child>
       </div>
 </template>
 
 <script>
+Function.prototype.getName = function(){
+    return this.name || this.toString().match(/function\s*([^(]*)\(/)[1]
+}
+const functional=(sup)=>function(com,...args){
+  if(!sup){
+    console.error(`[Functional warn] ${sup} is not valid`)
+    return
+  }
+  if(!com||com&&typeof com!=='function'){
+    console.error(`[Functional warn] ${com} is not valid ,props must be a function`)
+    return sup
+  }
+  if(!sup.components){
+    sup.components={}
+  }
+  Array.from(arguments).forEach((item,i)=>{
+    sup.components[item.getName()]={
+      name:item.getName(),
+      functional:true,
+      render:item
+    }
+  })
+  return sup    
+}
+const child=(h)=><div>我是函数式组件</div>
 import Rx from 'rxjs'
-export default {
+
+const App= {
   domStreams: ['plus$'],
   subscriptions() {
     return{
@@ -63,7 +90,7 @@ export default {
   // render(){
   //   return(
   //     <div id="app">
-  //       <ul id="infinite-scroller">
+  //       <ul id="infinite-scroll">
   //         {this.list.map(news => {
   //           return <li>{`${news.id} - ${news.title}`}</li>;
   //         })}
@@ -72,9 +99,11 @@ export default {
   //   )
   // }
 };
+export default functional(App)(child)
 </script>
+
 <style lang="scss">
-#infinite-scroller {
+#infinite-scroll {
   height: 500px;
   width: 700px;
   border: 1px solid #f5ad7c;
