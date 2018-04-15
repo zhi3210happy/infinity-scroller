@@ -34,7 +34,7 @@ const functional=(sup)=>function(com,...args){
   })
   return sup    
 }
-const child=(h)=><div>我是函数式组件</div>
+const child=(h,props)=><div>我是函数式组件</div>
 import Rx from 'rxjs'
 
 const App= {
