@@ -42,11 +42,11 @@ const App= {
   subscriptions() {
     return{
       requestOnScroll$:this.plus$.pluck('event','target').
-      map((target) =>(
+      map(({scrollHeight,scrollTop,clientHeight}) =>(
         {
-        sH:target.scrollHeight,
-        sT:target.scrollTop,
-        cH:target.clientHeight
+        sH:scrollHeight,
+        sT:scrollTop,
+        cH:clientHeight
       }))
       .pairwise()
       .filter(positions => {
