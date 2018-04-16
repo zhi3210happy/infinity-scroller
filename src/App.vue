@@ -29,12 +29,21 @@ const functional=(sup)=>function(com,...args){
     sup.components[item.getName()]={
       name:item.getName(),
       functional:true,
-      render:item
+      render(h,context){
+        if(window){
+          window.h=h;
+          window.context=context
+        }else{
+          global.h=h
+          global.context=context
+        }
+        return item()
+      }
     }
   })
   return sup    
 }
-const child=(h,props)=><div>我是函数式组件</div>
+const child=()=><div>我是函数式组件</div>
 import Rx from 'rxjs'
 
 const App= {
